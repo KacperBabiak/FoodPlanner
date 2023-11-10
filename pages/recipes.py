@@ -12,6 +12,8 @@ st.set_page_config(
 
 conn = st.connection('food_planner_db', type='sql')
 ingredients = conn.query('select * from ingredients',ttl=1)
+ing_list= ingredients.name.to_list()
+ing_list.sort()
 
 
 
@@ -20,12 +22,14 @@ meal_name = st.text_input("Nazwa")
 meal_course = st.text_input("Posiłek")
 options = st.multiselect(
     'Wybierz składniki',
-    ingredients.name.to_list()
+    ing_list
     )
 
 
-if st.button("Dodaj posiłem"):
+if st.button("Dodaj posiłek"):
     with conn.session as s:
+
+
         #s.execute(text('DROP TABLE recipes;'))
         #s.execute(text('DROP TABLE recipes_ing;'))
         s.execute(text('CREATE TABLE IF NOT EXISTS recipes (recipe_id INTEGER PRIMARY KEY, name TEXT, course TEXT,kcal INTEGER);'))
@@ -51,4 +55,4 @@ st.write("Lista przepisów")
 df = conn.query('select * from recipes',ttl=1)
 df2 = conn.query('select * from recipes_ing',ttl=1)
 df['Ingredients'] = df.apply(lambda x: ', '.join(df2[df2.recipe==x['name']].ingredient.to_list()),axis=1)
-st.table(df)
+st.table(df.drop("recipe_id",axis=1))

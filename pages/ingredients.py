@@ -41,7 +41,7 @@ if st.button("Dodaj składnik"):
 st.write("Lista składników")
 #df = dbfunction(conn, st.session_state['rerun_counter'])
 df = conn.query('select * from ingredients',ttl=1)
-st.table(df)
+st.table(df.drop('ing_id',axis=1))
 
 
 
